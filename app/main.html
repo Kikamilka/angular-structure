@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <script type="text/javascript" src="../node_modules/angular/angular.min.js"></script>
+  <script type="text/javascript" src="../node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="app.module.js"></script>
+  <script type="text/javascript" src="mainController.js"></script>
+  <script type="text/javascript" src="modal.directive.js"></script>
+  <script type="text/javascript" src="countValidator.directive.js"></script>
+  <script type="text/javascript" src="nameValidator.directive.js"></script>
+  <script type="text/javascript" src="validateElem.directive.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Angular Product App</title>
+</head>
+<body>
+  <div class="container" ng-app="app" ng-controller="mainController">
+
+    <form>
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-addon"> <i class="fa fa-search"></i>
+          </div>
+          <input type="text" class="form-control" placeholder="Search product" ng-model="searchItem.name"></div>
+        <button ng-click="changeModal(null)" class="btn btn-default" data-backdrop="static">Add new</button>
+      </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <td>
+            <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
+              Name
+              <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+          </td>
+          <td>
+            <a href="#" ng-click="sortType = 'price'; sortReverse = !sortReverse">
+              Price
+              <span ng-show="sortType == 'price' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'price' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+          </td>
+          <td>
+            <a>Actions</a>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="goods in products | orderBy:sortType:sortReverse | filter:searchItem">
+          <td class = "name-product">
+            <a class = "infoGoods" ng-click="infoModal(goods)">{{ goods.name }}</a>
+            <a class = "countGoods">{{ goods.count }}</a>
+          </td>
+          <td>{{ goods.price | currency }}</td>
+          <td>
+            <button ng-click="changeModal(goods)" class="btn btn-default" data-backdrop="static">Edit</button>
+            <button ng-click="deleteModal(goods)" class="btn btn-default" data-backdrop="static">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <modal id="modalChange" title="Product" visible="modalShown" data-backdrop="static">
+      <form name="myForm" data-ng-submit="myAction(myForm.$valid)" autocomplete="off" novalidate>
+
+        <div class="form-group">
+          <label for="name">Name product:</label>
+          <input name="name" type="text" class="form-control" id="nameModal" placeholder="Enter name" ng-model="user.name"  name-validator ng-model-options="{ updateOn: 'blur' }">
+          <span ng-show="myForm.name.$error.nameValidator">Field should have length from 1 to 15 words!</span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Supplier email:</label>
+          <input name="email" type="email" class="form-control" id="emailModal" placeholder="Enter email" ng-model="user.email" ng-model-options="{ updateOn: 'blur' }">
+          <span class = "errorInput" ng-show="myForm.email.$error.email">Incorrect email</span>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error': myForm.name.$invalid && myForm.name.$dirty }">
+          <label for="count">Count:</label>
+          <input type="number" class="form-control" name="count" id="countModal" placeholder="Enter count" ng-model="user.count" count-validator/>
+          <span ng-show="myForm.count.$error.countValidator">Count should be positive number!</span>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Price:</label>
+          <input type="number" class="form-control" id="priceModal" placeholder="Enter price" />
+          <!--validate-elem--> </div>
+        <button type="submit" id="doneProd" class="btn btn-default">Save</button>
+      </form>
+    </modal>
+
+    <modal id="modalInfo" title="Product" visible="modalInfoShown" data-backdrop="static">
+      <form name="myForm" role="form">
+        <div class="form-group">
+          <label for="#nameInfo">Name:</label>
+          <label id="nameInfo"></label>
+        </div>
+        <div class="form-group">
+          <label for="#emailInfo">Supplier email:</label>
+          <label id="emailInfo"></label>
+        </div>
+        <div class="form-group">
+          <label for="#countInfo">Count:</label>
+          <label id="countInfo"></label>
+        </div>
+        <div class="form-group">
+          <label for="#priceInfo">Price:</label>
+          <label id="priceInfo"></label>
+        </div>
+      </form>
+    </modal>
+
+    <modal id="modalDelete" class="small-modal" title="Are you sure?" visible="modalDeleteShown" data-backdrop="static">
+      <form role="form">
+        <label id="question"></label>
+        <div >
+          <button type="submit" id="yesDelete" class="btn btn-default">Yes</button>
+          <button type="button" id="noDelete" class="btn btn-default">No</button>
+        </div>
+      </form>
+    </modal>
+
+  </div>
+</body>
+</html>
